@@ -1,12 +1,13 @@
 from sqlalchemy.orm import Session
 from api.models.order import Order
+from api.schemas.order import OrderCreate, OrderUpdate
 
-def create(db: Session, data):
-    db_item = Order(**data.dict())
-    db.add(db_item)
+def create(db: Session, data: OrderCreate):
+    item = Order(**data.model_dump())
+    db.add(item)
     db.commit()
-    db.refresh(db_item)
-    return db_item
+    db.refresh(item)
+    return item
 
 def read_all(db: Session):
     return db.query(Order).all()
@@ -14,13 +15,13 @@ def read_all(db: Session):
 def read_one(db: Session, item_id: int):
     return db.query(Order).filter(Order.id == item_id).first()
 
-def update(db: Session, item_id: int, data):
-    db_item = db.query(Order).filter(Order.id == item_id)
-    db_item.update(data.dict(exclude_unset=True), synchronize_session=False)
+def update(db: Session, item_id: int, data: OrderUpdate):
+    item = db.query(Order).filter(Order.id == item_id)
+    item.update(data.model_dump(exclude_unset=True))
     db.commit()
-    return db_item.first()
+    return item.first()
 
 def delete(db: Session, item_id: int):
-    db_item = db.query(Order).filter(Order.id == item_id)
-    db_item.delete(synchronize_session=False)
+    item = db.query(Order).filter(Order.id == item_id)
+    item.delete()
     db.commit()

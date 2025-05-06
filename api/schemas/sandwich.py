@@ -1,14 +1,19 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
+from typing import Optional
 
 class SandwichBase(BaseModel):
-    pass
+    name: str
+    price: float
 
 class SandwichCreate(SandwichBase):
     pass
 
-class SandwichUpdate(SandwichBase):
-    pass
+class SandwichUpdate(BaseModel):
+    name: Optional[str] = None
+    price: Optional[float] = None
 
 class Sandwich(SandwichBase):
     id: int
-    model_config = ConfigDict(from_attributes=True)
+
+    class Config:
+        from_attributes = True  # for ORM (SQLAlchemy) compatibility

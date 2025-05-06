@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
 from api.models.recipe import Recipe
+from api.schemas.recipe import RecipeCreate, RecipeUpdate
 
-def create(db: Session, data):
-    db_item = Recipe(**data.dict())
-    db.add(db_item)
+def create(db: Session, data: RecipeCreate):
+    item = Recipe(sandwich_id=data.sandwich_id,
+        resource_id=data.resource_id,
+        amount_needed=data.amount_needed)
+    db.add(item)
     db.commit()
-    db.refresh(db_item)
-    return db_item
+    db.refresh(item)
+    return item
 
 def read_all(db: Session):
     return db.query(Recipe).all()
@@ -14,13 +17,13 @@ def read_all(db: Session):
 def read_one(db: Session, item_id: int):
     return db.query(Recipe).filter(Recipe.id == item_id).first()
 
-def update(db: Session, item_id: int, data):
-    db_item = db.query(Recipe).filter(Recipe.id == item_id)
-    db_item.update(data.dict(exclude_unset=True), synchronize_session=False)
+def update(db: Session, item_id: int, data: RecipeUpdate):
+    item = db.query(Recipe).filter(Recipe.id == item_id)
+    item.update(data.model_dump(exclude_unset=True))
     db.commit()
-    return db_item.first()
+    return item.first()
 
 def delete(db: Session, item_id: int):
-    db_item = db.query(Recipe).filter(Recipe.id == item_id)
-    db_item.delete(synchronize_session=False)
+    item = db.query(Recipe).filter(Recipe.id == item_id)
+    item.delete()
     db.commit()

@@ -1,14 +1,19 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
+from typing import Optional
 
 class OrderBase(BaseModel):
-    pass
+    customer_name: str
+    description: Optional[str] = None
 
 class OrderCreate(OrderBase):
     pass
 
-class OrderUpdate(OrderBase):
-    pass
+class OrderUpdate(BaseModel):
+    customer_name: Optional[str] = None
+    description: Optional[str] = None
 
 class Order(OrderBase):
     id: int
-    model_config = ConfigDict(from_attributes=True)
+
+    class Config:
+        from_attributes = True

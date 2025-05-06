@@ -1,14 +1,21 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
+from typing import Optional
 
 class RecipeBase(BaseModel):
-    pass
+    sandwich_id: int
+    resource_id: int
+    amount_needed: int
 
 class RecipeCreate(RecipeBase):
     pass
 
-class RecipeUpdate(RecipeBase):
-    pass
+class RecipeUpdate(BaseModel):
+    sandwich_id: Optional[int] = None
+    resource_id: Optional[int] = None
+    amount_needed: Optional[int] = None
 
 class Recipe(RecipeBase):
     id: int
-    model_config = ConfigDict(from_attributes=True)
+
+    class Config:
+        from_attributes = True
